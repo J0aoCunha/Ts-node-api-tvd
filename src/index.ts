@@ -1,10 +1,9 @@
 import fastify from 'fastify'
+import { CharsRoutes } from './routes/chars'
 
 const app = fastify()
 
-app.get('/TVD', () => {
-  return 'Estou funcionando.'
-})
+app.register(CharsRoutes)
 
 app
   .listen({
