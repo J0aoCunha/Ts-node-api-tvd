@@ -21,8 +21,7 @@ model Characters {
 }
 
 model Seasons {
-  id     String @id @default(uuid())
-  season String
+  season String @id
 
   characters   Characters @relation(fields: [charactersId], references: [id])
   charactersId String
