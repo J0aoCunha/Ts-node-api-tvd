@@ -97,7 +97,7 @@ export async function CharsRoutes(app: FastifyInstance) {
     })
   })
 
-  app.delete('/chars', async (req) => {
+  app.delete('/chars/:id', async (req) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     })
