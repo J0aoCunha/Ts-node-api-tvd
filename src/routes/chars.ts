@@ -64,7 +64,7 @@ export async function CharsRoutes(app: FastifyInstance) {
     return char
   })
 
-  app.put('/chars', async (req) => {
+  app.put('/chars/:id', async (req) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
     })
