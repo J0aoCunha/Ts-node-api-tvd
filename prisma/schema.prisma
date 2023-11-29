@@ -11,19 +11,10 @@ datasource db {
 }
 
 model Characters {
-  id          String    @id @default(uuid())
+  id          String @id @default(uuid())
   name        String
   description String
   imageURL    String
   type        String
   actorName   String
-  seasons     Seasons[]
-}
-
-model Seasons {
-  seasonId String @id @default(uuid())
-  season   Int
-
-  characters   Characters @relation(fields: [charactersId], references: [id])
-  charactersId String
 }
