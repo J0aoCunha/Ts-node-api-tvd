@@ -1,27 +1,33 @@
 import { FastifyInstance } from 'fastify'
 import { prisma } from '../lib/prisma'
-import { z } from 'zod'
+import { number, string, z } from 'zod'
 
 export async function CharsRoutes(app: FastifyInstance) {
+  // Endpoint para obter todos os personagens
   app.get('/chars', async () => {
     const chars = await prisma.characters.findMany({
+      include: {
+        seasons: true,
+      },
       orderBy: {
         name: 'desc',
       },
     })
 
-    return chars.map((chars) => {
+    return chars.map((char) => {
       return {
-        id: chars.id,
-        name: chars.name,
-        description: chars.description.substring(0, 200).concat('...'),
-        imageURL: chars.imageURL,
-        type: chars.type,
-        actorName: chars.actorName,
+        id: char.id,
+        name: char.name,
+        description: char.description.substring(0, 200).concat('...'),
+        imageURL: char.imageURL,
+        type: char.type,
+        actorName: char.actorName,
+        seasons: char.seasons.map((season) => season.season),
       }
     })
   })
 
+  // Endpoint para obter um personagem por ID
   app.get('/chars/:id', async (req) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
@@ -33,11 +39,23 @@ export async function CharsRoutes(app: FastifyInstance) {
       where: {
         id,
       },
+      include: {
+        seasons: true,
+      },
     })
 
-    return char
+    return {
+      id: char.id,
+      name: char.name,
+      description: char.description,
+      imageURL: char.imageURL,
+      type: char.type,
+      actorName: char.actorName,
+      seasons: char.seasons.map((season) => season.season),
+    }
   })
 
+  // Endpoint para criar um novo personagem
   app.post('/chars', async (req) => {
     const bodySchema = z.object({
       description: z.string(),
@@ -45,25 +63,40 @@ export async function CharsRoutes(app: FastifyInstance) {
       imageURL: z.string(),
       type: z.string(),
       actorName: z.string(),
+      seasons: z.array(z.number()), // Modifique para aceitar números inteiros
     })
 
-    const { description, name, imageURL, type, actorName } = bodySchema.parse(
-      req.body,
-    )
+    const { description, name, imageURL, type, actorName, seasons } =
+      bodySchema.parse(req.body)
 
-    const char = await prisma.characters.create({
+    const createdChar = await prisma.characters.create({
       data: {
         name,
         actorName,
         description,
         imageURL,
         type,
+        seasons: {
+          create: seasons.map((season) => ({ season })),
+        },
+      },
+      include: {
+        seasons: true,
       },
     })
 
-    return char
+    return {
+      id: createdChar.id,
+      name: createdChar.name,
+      description: createdChar.description,
+      imageURL: createdChar.imageURL,
+      type: createdChar.type,
+      actorName: createdChar.actorName,
+      seasons: createdChar.seasons.map((season) => season.season),
+    }
   })
 
+  // Endpoint para atualizar um personagem por ID
   app.put('/chars/:id', async (req) => {
     const paramsSchema = z.object({
       id: z.string().uuid(),
@@ -77,11 +110,11 @@ export async function CharsRoutes(app: FastifyInstance) {
       imageURL: z.string(),
       type: z.string(),
       actorName: z.string(),
+      seasons: z.array(z.number()),
     })
 
-    const { description, name, imageURL, type, actorName } = bodySchema.parse(
-      req.body,
-    )
+    const { description, name, imageURL, type, actorName, seasons } =
+      bodySchema.parse(req.body)
 
     await prisma.characters.update({
       where: {
@@ -93,21 +126,46 @@ export async function CharsRoutes(app: FastifyInstance) {
         description,
         imageURL,
         type,
+        seasons: {
+          deleteMany: {}, // Deleta todas as associações de temporadas existentes
+          create: seasons.map((season) => ({ season })),
+        },
+      },
+      include: {
+        seasons: true,
       },
     })
   })
 
-  app.delete('/chars/:id', async (req) => {
-    const paramsSchema = z.object({
-      id: z.string().uuid(),
-    })
+  // Endpoint para deletar um personagem por ID
+  // app.delete('/chars/:id', async (req) => {
+  //   const paramsSchema = z.object({
+  //     id: z.string().uuid(),
+  //   })
+  //   const paramsSchemas = z.object({
+  //     id: z.string().uuid(),
+  //   })
 
-    const { id } = paramsSchema.parse(req.params)
+  //   const { id } = paramsSchema.parse(req.params)
 
-    await prisma.characters.delete({
-      where: {
-        id,
-      },
-    })
-  })
+  //   // Desassocie o personagem das temporadas sem excluir as temporadas
+  //   await prisma.characters.update({
+  //     where: {
+  //       id,
+  //     },
+  //     data: {
+  //       seasons: {
+  //         disconnect: [],
+  //       },
+  //     },
+  //   })
+  //   console.log()
+
+  //   // Agora você pode excluir o próprio personagem
+  //   await prisma.characters.delete({
+  //     where: {
+  //       id,
+  //     },
+  //   })
+  // })
 }
