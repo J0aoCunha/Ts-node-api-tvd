@@ -5,6 +5,7 @@ API simples para administrar informações sobre personagens de Diários de Vamp
 ## Série Diários de Vampiros: Resumo
 
 Diários de Vampiros é uma série de televisão que segue a vida de Elena Gilbert enquanto ela se envolve em um triângulo amoroso com dois irmãos vampiros, Stefan e Damon Salvatore. A trama se desenrola na misteriosa cidade de Mystic Falls, onde segredos antigos, magia e a luta pelo poder criam um ambiente tenso e emocionante.
+
 ## Rotas
 
 ### Listar Personagens
