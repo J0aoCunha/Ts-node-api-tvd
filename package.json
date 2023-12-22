@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "lint": "eslint src --ext .ts --fix",
-    "build": "tsup src"
+    "build": "tsup src",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
