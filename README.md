@@ -44,7 +44,8 @@ Certifique-se de ter Node.js e npm instalados. Execute `npm install` para instal
 
 ## Executando a Aplicação
 
-Execute `npm start` e acesse a aplicação em `http://localhost:3333`.
+- Execute `npm start` e acesse a aplicação em `http://localhost:3333`.
+- ou acesse a aplicaçao no [link](https://api-tvd-7tdl.onrender.com/chars)
 
 ## Contribuindo
 
